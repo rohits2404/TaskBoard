@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* -------------------------------------------------
+   THEME
+------------------------------------------------- */
+
+@theme {
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+
+    --color-secondary-50: #f8fafc;
+    --color-secondary-100: #f1f5f9;
+    --color-secondary-200: #e2e8f0;
+    --color-secondary-300: #cbd5e1;
+    --color-secondary-400: #94a3b8;
+    --color-secondary-500: #64748b;
+    --color-secondary-600: #475569;
+    --color-secondary-700: #334155;
+    --color-secondary-800: #1e293b;
+    --color-secondary-900: #0f172a;
+
+    --color-gradient-start: #667eea;
+    --color-gradient-end: #764ba2;
+}
+
+/* -------------------------------------------------
+   BASE
+------------------------------------------------- */
+
+@layer base {
+    html {
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+  
+    body {
+        @apply bg-linear-to-br from-gray-50 via-white to-gray-100
+               dark:from-gray-900 dark:via-gray-800 dark:to-gray-900;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+}
+
+/* -------------------------------------------------
+   COMPONENTS
+------------------------------------------------- */
+
+@layer components {
+    .glass-effect {
+        @apply backdrop-blur-lg bg-white/10 dark:bg-gray-900/20
+               border border-white/20 dark:border-gray-700/30;
+    }
+
+    .dropdown-panel {
+        @apply bg-white dark:bg-gray-800
+           border border-gray-200 dark:border-gray-700
+           shadow-2xl;
+    }
+
+    
+    .gradient-text {
+        @apply bg-linear-to-r from-primary-500 via-purple-500 to-pink-500
+               bg-clip-text text-transparent;
+    }
+    
+    .gradient-bg {
+        @apply bg-linear-to-r from-primary-500 to-purple-600;
+    }
+    
+    .card-hover {
+        @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
+    }
+    
+    .btn-primary {
+        @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 
+               bg-linear-to-r from-primary-500 to-primary-700
+               hover:from-primary-600 hover:to-primary-800 
+               active:scale-95 text-white shadow-lg hover:shadow-xl;
+    }
+    
+    .btn-secondary {
+        @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 
+               bg-white/10 dark:bg-gray-800/50 
+               hover:bg-white/20 dark:hover:bg-gray-700/50 
+               active:scale-95 border border-white/20 dark:border-gray-600/50;
+    }
+    
+    .input-field {
+        @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+               bg-white/50 dark:bg-gray-800/50 
+               focus:ring-2 focus:ring-primary-500 focus:border-transparent 
+               outline-none transition-all duration-200;
+    }
+    
+    .dashboard-card {
+        @apply backdrop-blur-lg bg-white/10 dark:bg-gray-900/20
+               border border-white/20 dark:border-gray-700/30
+               rounded-2xl p-6 shadow-xl
+               transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
+    }
+}
+
+/* -------------------------------------------------
+   SCROLLBAR
+------------------------------------------------- */
+
+::-webkit-scrollbar { width: 10px; }
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-linear-to-b from-primary-500 to-purple-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply from-primary-600 to-purple-700;
+}
+
+/* -------------------------------------------------
+   KEYFRAMES
+------------------------------------------------- */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes gradientMove {
+    0%, 100% {
+        background-size: 200% 200%;
+        background-position: left center;
+    }
+    50% {
+        background-position: right center;
+    }
+}
+
+/* -------------------------------------------------
+   UTILITIES
+------------------------------------------------- */
+
+@utility animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+@utility animate-slide-up { animation: slideUp 0.3s ease-out; }
+@utility animate-pulse-slow { animation: pulse 3s infinite; }
+@utility animate-float { animation: float 6s ease-in-out infinite; }
+@utility animate-gradient { animation: gradientMove 15s ease infinite; }
+
+@utility bg-gradient-radial {
+    background-image: radial-gradient(var(--tw-gradient-stops));
+}
+
+@utility bg-gradient-conic {
+    background-image: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+}
+
+@utility animation-delay-2000 {
+    animation-delay: 2000ms;
+}
+
+@utility animation-delay-4000 {
+    animation-delay: 4000ms;
+}
+
+.grid-pattern {
+    background-image:
+        linear-gradient(to right, rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+.blur-circle {
+    @apply absolute rounded-full blur-3xl opacity-20;
+}
+
+.blur-circle-1 {
+    @apply w-96 h-96 bg-linear-to-r from-primary-500 to-purple-500 -top-48 -left-48;
+}
+
+.blur-circle-2 {
+    @apply w-96 h-96 bg-linear-to-r from-pink-500 to-rose-500 -bottom-48 -right-48;
+}

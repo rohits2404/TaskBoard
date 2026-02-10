@@ -1,0 +1,652 @@
+{
+  "info": {
+    "_postman_id": "modern-auth-dashboard",
+    "name": "Modern Auth Dashboard API",
+    "description": "Complete API collection for Modern Auth Dashboard with JWT authentication and task management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "📦 Environment Setup",
+      "item": [
+        {
+          "name": "Set Environment Variables",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "",
+              "protocol": "http",
+              "host": ["localhost:5000"]
+            },
+            "description": "Set up environment variables in Postman:\n\nVariables:\n- base_url: http://localhost:5000 (or your deployed URL)\n- token: {{auth_token}} (auto-set after login)\n- user_id: {{user_id}} (auto-set after login)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏪 Health Check",
+      "item": [
+        {
+          "name": "API Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["health"]
+            },
+            "description": "Check if the API server is running"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "📝 Register New User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Extract token and user ID from response",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"auth_token\", jsonData.token);",
+                  "pm.environment.set(\"user_id\", jsonData._id);",
+                  "pm.environment.set(\"user_name\", jsonData.name);",
+                  "pm.environment.set(\"user_email\", jsonData.email);",
+                  "",
+                  "// Test response",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    pm.expect(jsonData).to.have.property('_id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user account\n\n**Password Requirements:**\n- Minimum 6 characters\n- At least one uppercase letter\n- At least one number"
+          },
+          "response": []
+        },
+        {
+          "name": "🔑 User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Extract token and user ID from response",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"auth_token\", jsonData.token);",
+                  "pm.environment.set(\"user_id\", jsonData._id);",
+                  "pm.environment.set(\"user_name\", jsonData.name);",
+                  "pm.environment.set(\"user_email\", jsonData.email);",
+                  "",
+                  "// Test response",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with existing credentials"
+          },
+          "response": []
+        },
+        {
+          "name": "👤 Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Get the profile of currently authenticated user\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"avatar\": \"https://example.com/new-avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/update",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "update"]
+            },
+            "description": "Update user profile information\n**Requires Authentication**"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Tasks Management",
+      "item": [
+        {
+          "name": "📋 Get All Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks"]
+            },
+            "description": "Get all tasks for the authenticated user\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "🔍 Get Tasks with Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks?status=completed&priority=high&search=urgent",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                },
+                {
+                  "key": "priority",
+                  "value": "high"
+                },
+                {
+                  "key": "search",
+                  "value": "urgent"
+                }
+              ]
+            },
+            "description": "Get tasks with filters\n\n**Available Filters:**\n- status: todo, in-progress, completed\n- priority: low, medium, high\n- search: search in title/description\n- tag: filter by tag\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "📊 Get Task Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/stats",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks", "stats"]
+            },
+            "description": "Get statistics about user's tasks\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "➕ Create New Task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Extract task ID from response",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"task_id\", jsonData._id);",
+                  "",
+                  "// Test response",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Task created successfully\", function () {",
+                  "    pm.expect(jsonData).to.have.property('_id');",
+                  "    pm.expect(jsonData.title).to.equal('Complete Project Documentation');",
+                  "    pm.expect(jsonData.status).to.equal('todo');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project Documentation\",\n  \"description\": \"Write comprehensive documentation for the Modern Auth Dashboard project\",\n  \"status\": \"todo\",\n  \"priority\": \"high\",\n  \"dueDate\": \"2024-12-31\",\n  \"tags\": [\"documentation\", \"important\", \"work\"],\n  \"isImportant\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks"]
+            },
+            "description": "Create a new task\n**Requires Authentication**\n\n**Task Schema:**\n- title: string (required)\n- description: string (optional)\n- status: todo, in-progress, completed\n- priority: low, medium, high\n- dueDate: ISO date string (optional)\n- tags: array of strings (optional)\n- isImportant: boolean"
+          },
+          "response": []
+        },
+        {
+          "name": "📄 Get Single Task",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks", "{{task_id}}"]
+            },
+            "description": "Get a single task by ID\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "✏️ Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Complete Project Documentation - Updated\",\n  \"status\": \"in-progress\",\n  \"priority\": \"medium\",\n  \"tags\": [\"documentation\", \"work\", \"updated\"],\n  \"isImportant\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks", "{{task_id}}"]
+            },
+            "description": "Update an existing task\n**Requires Authentication**"
+          },
+          "response": []
+        },
+        {
+          "name": "🗑️ Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/{{task_id}}",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks", "{{task_id}}"]
+            },
+            "description": "Delete a task by ID\n**Requires Authentication**"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🚫 Error Scenarios",
+      "item": [
+        {
+          "name": "❌ Register with Existing Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Try to register with an email that already exists"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Invalid Login Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wrong@example.com\",\n  \"password\": \"WrongPass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Try to login with invalid credentials"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Access Protected Route Without Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Try to access protected route without authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Access Protected Route with Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_here"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Try to access protected route with invalid JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Create Task with Invalid Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"status\": \"invalid-status\",\n  \"priority\": \"invalid-priority\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tasks",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks"]
+            },
+            "description": "Try to create a task with invalid data (empty title, invalid status/priority)"
+          },
+          "response": []
+        },
+        {
+          "name": "❌ Access Task of Another User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks/656565656565656565656565",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks", "656565656565656565656565"]
+            },
+            "description": "Try to access a task that doesn't belong to the current user (or doesn't exist)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "⚡ Performance Tests",
+      "item": [
+        {
+          "name": "📈 Rate Limiting Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Test rate limiting by making multiple requests quickly"
+          },
+          "response": []
+        },
+        {
+          "name": "⚡ Concurrent Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tasks",
+              "protocol": "http",
+              "host": ["localhost:5000"],
+              "port": "5000",
+              "path": ["api", "tasks"]
+            },
+            "description": "Test concurrent requests to measure performance"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script to log requests",
+          "console.log('Making request to: ' + pm.request.url);",
+          "console.log('Method: ' + pm.request.method);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test(\"Response time is less than 500ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(500);",
+          "});",
+          "",
+          "pm.test(\"Content-Type header is present\", function () {",
+          "    pm.response.to.have.header(\"Content-Type\");",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "task_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": null
+}
